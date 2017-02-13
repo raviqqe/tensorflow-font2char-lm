@@ -36,3 +36,5 @@ def def_ar_lm():
         # TODO: Calculate loss.
         labels = batch.sequences["labels"]
         return loss
+
+    return ar_lm
