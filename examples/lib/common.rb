@@ -10,9 +10,23 @@ task :dataset => 'var' do |t|
 
   dataset_dir = File.join(t.source, 'dataset')
   mkdir_p dataset_dir
-  Dir.glob('**/*.clj').each do |filename|
-    cp filename , File.join(dataset_dir, filename.gsub(/\//, '_'))
+
+  filenames = Dir.glob('var/clojure/**/*.clj')
+  p filenames.length
+
+  [
+    ['train', filenames[0..-22]],
+    ['dev', filenames[-21..-12]],
+    ['test', filenames[-11..-1]],
+  ].each do |subdir, fnames|
+    dirname = File.join dataset_dir, subdir
+    mkdir_p dirname
+    fnames.each do |fname|
+      cp fname , File.join(dirname, fname.gsub(/\//, '_'))
+    end
   end
+
+
 end
 
 

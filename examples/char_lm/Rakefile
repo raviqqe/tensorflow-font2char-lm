@@ -4,11 +4,16 @@ require_relative '../lib/common.rb'
 task :default => %i(dataset var/chars.txt) do |t|
   sh %W(python main.py
         --char_file #{t.sources[1]}
-        --train_file 'var/dataset/*.clj'
-        --eval_file  'var/dataset/*.clj'
+        --train_file 'var/dataset/train/*.clj'
+        --eval_file  'var/dataset/dev/*.clj'
         --train_steps 20
         --eval_steps 20
         --batch_size 32
-        --batch_queue_capacity #{Dir.glob('var/dataset/*.clj').length / 2}
+        --batch_queue_capacity #{Dir.glob('var/dataset/train/*.clj').length / 2}
   ).join(' ')
+end
+
+
+task :clean do
+  sh 'git clean -dfx'
 end
