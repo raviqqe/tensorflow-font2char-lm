@@ -1,0 +1,13 @@
+require_relative '../lib/common.rb'
+
+
+task :default => %i(dataset var/chars.txt) do |t|
+  sh %W(python main.py
+        --char_file #{t.sources[1]}
+        --train_file 'var/dataset/train/*.txt'
+        --eval_file  'var/dataset/test/*.txt'
+        --train_steps 20
+        --eval_steps 20
+        --batch_size 4
+  ).join(' ')
+end
