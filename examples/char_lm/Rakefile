@@ -8,6 +8,5 @@ task :default => %i(dataset var/chars.txt) do |t|
         --eval_file  'var/dataset/test/*.txt'
         --train_steps 20
         --eval_steps 20
-        --batch_size 4
   ).join(' ')
 end

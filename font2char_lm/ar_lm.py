@@ -1,3 +1,5 @@
+import os
+
 import qnd
 import tensorflow as tf
 
@@ -5,14 +7,17 @@ import tensorflow as tf
 def def_ar_lm():
     qnd.add_flag('cell_size', type=int, default=8)
     qnd.add_flag('num_unroll', type=int, default=16)
+    qnd.add_flag('batch_size', type=int, default=64)
+    qnd.add_flag('num_batch_threads', type=int, default=os.cpu_count())
+    qnd.add_flag('batch_queue_capacity', type=int, default=1024)
 
-    def ar_lm(key, sequence, labels, *, char_embeddings):
-        cell = tf.contrib.rnn.LayerNormalBasicLSTMCell(qnd.FLAGS.cell_size)
+    def ar_lm(key, sentence, labels, *, char_embeddings):
+        cell = tf.contrib.rnn.LayerNormBasicLSTMCell(qnd.FLAGS.cell_size)
 
-        batch = tf.batch_sequences_with_states(
+        batch = tf.contrib.training.batch_sequences_with_states(
             key,
-            input_sequneces={
-                'sequence': tf.gather(char_embeddings, sequence),
+            input_sequences={
+                'sentence': tf.gather(char_embeddings, sentence),
                 'labels': labels,
             },
             input_context={},
@@ -28,13 +33,14 @@ def def_ar_lm():
 
         outputs, _ = tf.nn.state_saving_rnn(
             cell,
-            tf.split(1, qnd.FLAGS.num_unroll, batch.sequences['sequence']),
+            tf.unstack(tf.transpose(batch.sequences['sentence'], [1, 0, 2])),
             sequence_length=batch.length,
             state_saver=batch,
             state_name=('c', 'h'))
 
-        # TODO: Calculate loss.
-        labels = batch.sequences["labels"]
+        labels = batch.sequences['labels']
+        print(labels)
+
         return loss
 
     return ar_lm

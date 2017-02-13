@@ -11,10 +11,10 @@ def def_char_lm():
     qnd.add_flag('char_embedding_size', type=int, default=100)
     ar_lm = def_ar_lm()
 
-    def char_lm(key, sequence, labels):
+    def char_lm(key, sentence, labels):
         return ar_lm(
             key,
-            sequence,
+            sentence,
             labels,
             char_embeddings=ex.embeddings(
                 id_space_size=len(get_chars()),

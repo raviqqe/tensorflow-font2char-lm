@@ -16,7 +16,7 @@ task :dataset => 'var' do |t|
 end
 
 
-file 'var/chars.txt' => :dataset do |t|
+file 'var/chars_tmp.txt' => :dataset do |t|
   chars = ''
 
   Dir.glob('var/dataset/*.clj').each do |filename|
@@ -24,4 +24,13 @@ file 'var/chars.txt' => :dataset do |t|
   end
 
   File.write t.name, Set.new(chars.chars).to_a.sort.join.gsub(/./, "\\0\n")
+end
+
+
+file 'var/chars.txt' => 'var/chars_tmp.txt' do |t|
+  sh "echo '<none>' > #{t.name}"
+  sh "echo '<unknown>' >> #{t.name}"
+  sh "echo '<s>' >> #{t.name}"
+  sh "echo '</s>' >> #{t.name}"
+  sh "cat #{t.source} >> #{t.name}"
 end
