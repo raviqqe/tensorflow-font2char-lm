@@ -3,7 +3,7 @@ import qndex
 import extenteten as ex
 import tensorflow as tf
 
-from . import ar_lm
+from .ar_lm import def_ar_lm
 
 
 def def_char_lm():
