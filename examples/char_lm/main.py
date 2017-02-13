@@ -21,7 +21,7 @@ def def_convert_text():
             return (sentence,
                     np.array([*sentence[1:], char_indices['</s>']],
                              dtype=sentence.dtype),
-                    len(sentence))
+                    np.array(len(sentence), dtype=np.int32))
 
         sentence, labels, length = tf.py_func(
             convert, [string], [tf.int32, tf.int32, tf.int32],
@@ -29,7 +29,8 @@ def def_convert_text():
 
         length.set_shape([])
 
-        return tf.reshape(sentence, [length]), tf.reshape(labels, [length])
+        reshape = lambda sequence: tf.reshape(sequence, tf.pack([length]))
+        return reshape(sentence), reshape(labels)
 
     return convert_text
 
