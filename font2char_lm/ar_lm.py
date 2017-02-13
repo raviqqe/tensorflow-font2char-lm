@@ -73,8 +73,15 @@ def sequence_labeling_loss(logits, labels, sequence_length=None):
     assert ex.static_rank(logits) == 3
     assert ex.static_rank(labels) == 2
 
-    return tf.reduce_mean(tf.reshape(
+    losses = tf.reshape(
         tf.nn.sparse_softmax_cross_entropy_with_logits(
             tf.reshape(logits, [-1, ex.static_shape(logits)[-1]]),
             tf.reshape(labels, [-1])),
-        [-1, *ex.static_shape(labels)[1:]]))
+        [-1, *ex.static_shape(labels)[1:]])
+
+    if sequence_length == None:
+        return tf.reduce_mean(losses)
+
+    mask = tf.sequence_mask(sequence_length, dtype=losses.dtype)
+
+    return tf.reduce_sum(losses * mask) / tf.reduce_sum(mask)
